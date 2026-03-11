@@ -266,12 +266,20 @@
     pointer-events: none;
   }
 
-  // Shared showcase item container
+  // Shared showcase item container — dark pixel-style panel
   &__sc-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    padding: 16px 28px;
+    background: rgba(6, 10, 20, 0.88);
+    border: 3px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+    box-shadow:
+      0 8px 40px rgba(0,0,0,0.8),
+      0 0 0 1px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.08);
     animation: ub-sc-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
@@ -279,44 +287,36 @@
   &__sc-element {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
   }
 
   &__sc-element-icon {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     image-rendering: pixelated;
-    filter: drop-shadow(0 0 10px rgba(255,255,255,0.4));
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.8));
   }
 
   &__sc-element-arrow {
-    font-size: 36px;
-    color: rgba(255,255,255,0.6);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 28px;
+    color: rgba(255,255,255,0.5);
     line-height: 1;
-    text-shadow: 0 0 8px rgba(255,255,255,0.3);
   }
 
   &__sc-counter {
     font-family: 'Press Start 2P', monospace;
-    font-size: 18px;
+    font-size: 16px;
     letter-spacing: 0.1em;
-    padding: 8px 20px;
-    border-radius: 8px;
 
     &--good {
-      color: #22c55e;
-      background: rgba(34,197,94,0.2);
-      border: 2px solid rgba(34,197,94,0.5);
-      text-shadow: 0 0 16px rgba(34,197,94,0.9);
-      box-shadow: 0 0 30px rgba(34,197,94,0.3);
+      color: #4ade80;
+      text-shadow: 0 2px 0 #166534, 0 0 16px rgba(34,197,94,0.8);
     }
 
     &--bad {
-      color: #ef4444;
-      background: rgba(239,68,68,0.18);
-      border: 2px solid rgba(239,68,68,0.5);
-      text-shadow: 0 0 16px rgba(239,68,68,0.9);
-      box-shadow: 0 0 30px rgba(239,68,68,0.3);
+      color: #f87171;
+      text-shadow: 0 2px 0 #7f1d1d, 0 0 16px rgba(239,68,68,0.8);
     }
   }
 
@@ -325,38 +325,27 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    padding: 10px 20px;
-    background: rgba(245,158,11,0.15);
-    border: 2px solid rgba(245,158,11,0.4);
-    border-radius: 10px;
-    box-shadow: 0 0 24px rgba(245,158,11,0.25);
+    gap: 6px;
     animation: ub-sc-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    &--ai {
-      background: rgba(168,85,247,0.15);
-      border-color: rgba(168,85,247,0.4);
-      box-shadow: 0 0 24px rgba(168,85,247,0.25);
-
-      .ub-battle__sc-skill-label {
-        color: #c084fc;
-        text-shadow: 0 0 12px rgba(168,85,247,0.8);
-      }
+    &--ai .ub-battle__sc-skill-label {
+      color: #c084fc;
+      text-shadow: 0 2px 0 #4c1d95, 0 0 12px rgba(168,85,247,0.8);
     }
   }
 
   &__sc-skill-name {
-    font-family: 'Noto Sans SC', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.6);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em;
   }
 
   &__sc-skill-label {
     font-family: 'Press Start 2P', monospace;
     font-size: 14px;
     color: #fbbf24;
-    text-shadow: 0 0 12px rgba(245,158,11,0.8);
+    text-shadow: 0 2px 0 #78350f, 0 0 12px rgba(245,158,11,0.8);
   }
 
   // Step 3: ATK comparison
@@ -370,14 +359,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
   }
 
   &__sc-atk-num {
     font-family: 'Press Start 2P', monospace;
     font-size: 36px;
     color: #f59e0b;
-    text-shadow: 0 0 20px rgba(245,158,11,0.8), 0 0 40px rgba(245,158,11,0.4);
+    text-shadow:
+      0 3px 0 #78350f,
+      0 0 20px rgba(245,158,11,0.7),
+      0 0 40px rgba(245,158,11,0.3);
     animation: ub-sc-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
@@ -385,80 +377,83 @@
     font-family: 'Press Start 2P', monospace;
     font-size: 10px;
     color: #fbbf24;
-    background: rgba(127,29,29,0.95);
-    border: 1.5px solid rgba(245,158,11,0.5);
-    border-radius: 4px;
+    background: #7f1d1d;
+    border: 2px solid #fbbf24;
+    border-radius: 2px;
     padding: 3px 8px;
-    box-shadow: 0 0 14px rgba(245,158,11,0.8);
+    text-shadow: 0 1px 0 #78350f;
+    box-shadow: 0 3px 0 #450a0a, 0 0 14px rgba(245,158,11,0.6);
     animation: ub-sc-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
   }
 
   &__sc-atk-vs {
     font-family: 'Press Start 2P', monospace;
-    font-size: 14px;
-    color: rgba(255,255,255,0.4);
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    text-shadow: 0 1px 0 rgba(0,0,0,0.5);
   }
 
-  // Step 4: Final result — HUGE
+  // Step 4: Final result — HUGE pixel banner
   &__sc-result {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px 40px;
-    border-radius: 16px;
+    padding: 20px 44px;
+    background: rgba(6, 10, 20, 0.92);
+    border-radius: 4px;
     animation: ub-sc-result-slam 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
 
     &--player {
-      background: linear-gradient(135deg, rgba(34,197,94,0.3), rgba(16,185,129,0.15));
-      border: 3px solid rgba(34,197,94,0.7);
+      border: 4px solid #22c55e;
       box-shadow:
-        0 0 60px rgba(34,197,94,0.5),
-        0 0 120px rgba(34,197,94,0.2),
-        inset 0 0 30px rgba(34,197,94,0.1);
+        0 6px 0 #064e3b,
+        0 12px 50px rgba(0,0,0,0.8),
+        0 0 60px rgba(34,197,94,0.4),
+        inset 0 0 40px rgba(34,197,94,0.08);
 
       .ub-battle__sc-result-text {
-        color: #fff;
+        color: #4ade80;
         text-shadow:
+          0 4px 0 #064e3b,
           0 0 30px rgba(34,197,94,1),
-          0 0 60px rgba(34,197,94,0.6),
-          0 0 100px rgba(34,197,94,0.3);
+          0 0 60px rgba(34,197,94,0.5);
       }
     }
 
     &--ai {
-      background: linear-gradient(135deg, rgba(239,68,68,0.25), rgba(220,38,38,0.15));
-      border: 3px solid rgba(239,68,68,0.7);
+      border: 4px solid #ef4444;
       box-shadow:
-        0 0 60px rgba(239,68,68,0.5),
-        0 0 120px rgba(239,68,68,0.2),
-        inset 0 0 30px rgba(239,68,68,0.1);
+        0 6px 0 #450a0a,
+        0 12px 50px rgba(0,0,0,0.8),
+        0 0 60px rgba(239,68,68,0.4),
+        inset 0 0 40px rgba(239,68,68,0.08);
 
       .ub-battle__sc-result-text {
-        color: #fff;
+        color: #f87171;
         text-shadow:
+          0 4px 0 #450a0a,
           0 0 30px rgba(239,68,68,1),
-          0 0 60px rgba(239,68,68,0.6),
-          0 0 100px rgba(239,68,68,0.3);
+          0 0 60px rgba(239,68,68,0.5);
       }
     }
 
     &--draw {
-      background: rgba(255,255,255,0.06);
-      border: 3px solid rgba(255,255,255,0.2);
-      box-shadow: 0 0 40px rgba(255,255,255,0.1);
+      border: 4px solid rgba(255,255,255,0.3);
+      box-shadow:
+        0 6px 0 rgba(0,0,0,0.6),
+        0 12px 50px rgba(0,0,0,0.8);
 
       .ub-battle__sc-result-text {
-        color: rgba(255,255,255,0.8);
-        text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        color: rgba(255,255,255,0.7);
+        text-shadow: 0 3px 0 rgba(0,0,0,0.5), 0 0 16px rgba(255,255,255,0.3);
       }
     }
   }
 
   &__sc-result-text {
     font-family: 'Press Start 2P', monospace;
-    font-size: 40px;
-    letter-spacing: 0.15em;
+    font-size: 44px;
+    letter-spacing: 0.12em;
     line-height: 1;
   }
 
