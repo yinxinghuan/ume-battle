@@ -147,23 +147,25 @@ const BattleScreen = memo(function BattleScreen({ battle, onPlay }: Props) {
 
       {/* HUD */}
       <div className="ub-battle__hud">
-        <div className="ub-battle__hud-side">
-          <span className="ub-battle__hud-label">{t('youLabel')}</span>
-          <div className="ub-battle__pips">
-            {[0,1,2].map(i => (
-              <div key={i} className={`ub-battle__pip${i < playerScore ? ' ub-battle__pip--win' : ''}`} />
-            ))}
+        <div className="ub-battle__hud-left">
+          <div className="ub-battle__hud-row">
+            <span className="ub-battle__hud-label">{t('youLabel')}</span>
+            <div className="ub-battle__pips">
+              {[0,1,2].map(i => (
+                <div key={i} className={`ub-battle__pip${i < playerScore ? ' ub-battle__pip--win' : ''}`} />
+              ))}
+            </div>
+          </div>
+          <div className="ub-battle__hud-row">
+            <span className="ub-battle__hud-label">{t('aiLabel')}</span>
+            <div className="ub-battle__pips">
+              {[0,1,2].map(i => (
+                <div key={i} className={`ub-battle__pip${i < aiScore ? ' ub-battle__pip--lose' : ''}`} />
+              ))}
+            </div>
           </div>
         </div>
         <div className="ub-battle__hud-round">{roundLabel}</div>
-        <div className="ub-battle__hud-side ub-battle__hud-side--right">
-          <div className="ub-battle__pips">
-            {[0,1,2].map(i => (
-              <div key={i} className={`ub-battle__pip${i < aiScore ? ' ub-battle__pip--lose' : ''}`} />
-            ))}
-          </div>
-          <span className="ub-battle__hud-label">{t('aiLabel')}</span>
-        </div>
         <button className="ub-battle__help-btn" onPointerDown={() => setShowHelp(true)}>?</button>
       </div>
 
