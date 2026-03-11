@@ -152,10 +152,14 @@ export function useUmeBattle() {
 
   useEffect(() => () => clearTimers(), [clearTimers])
 
-  // ── Select phase ────────────────────────────────────────────────────────
+  // ── Start → Select transition ───────────────────────────────────────
   const goToSelect = useCallback(() => {
-    clearTimers(); setSelected([]); setBattle(null); setPhase('select')
-  }, [clearTimers])
+    clearTimers()
+    setPhase('start_exit')
+    addTimer(() => {
+      setSelected([]); setBattle(null); setPhase('select')
+    }, 700)
+  }, [clearTimers, addTimer])
 
   const toggleSelect = useCallback((char: Character) => {
     setSelected(prev => {
@@ -168,13 +172,18 @@ export function useUmeBattle() {
   const confirmSelection = useCallback(() => {
     setSelected(sel => {
       if (sel.length !== 3) return sel
-      const aiHand = CHARACTERS.filter(c => !sel.find(s => s.id === c.id))
-      const b = makeBattle([...sel], aiHand)
-      setBattle(b)
-      setPhase('battle')
-      // AI card fly-down animation → then player can pick
+      // Start exit animation
+      setPhase('select_exit')
+      // After cards fly out, switch to battle
       addTimer(() => {
-        setBattle(prev => prev ? { ...prev, roundPhase: 'picking' } : prev)
+        const aiHand = CHARACTERS.filter(c => !sel.find(s => s.id === c.id))
+        const b = makeBattle([...sel], aiHand)
+        setBattle(b)
+        setPhase('battle')
+        // AI card fly-down animation → then player can pick
+        addTimer(() => {
+          setBattle(prev => prev ? { ...prev, roundPhase: 'picking' } : prev)
+        }, 800)
       }, 800)
       return sel
     })

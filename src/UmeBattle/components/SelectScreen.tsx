@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import type { Character, Element } from '../types'
 import { CHARACTERS } from '../types'
 import { t } from '../i18n'
@@ -11,6 +11,7 @@ interface Props {
   selected:  Character[]
   onToggle:  (char: Character) => void
   onConfirm: () => void
+  exiting?:  boolean
 }
 
 const ELEMENT_ICON: Record<Element, string> = {
@@ -22,13 +23,38 @@ const BEATS: Record<Element, Element> = {
   fire: 'nature', water: 'fire', nature: 'water',
 }
 
-const SelectScreen = memo(function SelectScreen({ selected, onToggle, onConfirm }: Props) {
+// Generate random exit directions for cards
+function randomExit(goDown: boolean) {
+  const xOffset = (Math.random() - 0.5) * 300
+  const yDist = (400 + Math.random() * 200) * (goDown ? 1 : -1)
+  return {
+    x: xOffset,
+    y: yDist,
+    rotate: (Math.random() - 0.5) * 60,
+    delay: Math.random() * 0.2,
+    duration: 0.5 + Math.random() * 0.2,
+  }
+}
+
+const SelectScreen = memo(function SelectScreen({ selected, onToggle, onConfirm, exiting }: Props) {
   const isSelected = (c: Character) => selected.some(s => s.id === c.id)
   const canConfirm = selected.length === 3
 
+  // Pre-generate exit animations
+  const exitStyles = useMemo(() =>
+    CHARACTERS.map(c => {
+      const sel = selected.some(s => s.id === c.id)
+      return randomExit(sel) // selected → down, unselected → up
+    }),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [exiting])
+
   return (
-    <div className="ub-select">
-      <div className="ub-select__header">
+    <div className={`ub-select${exiting ? ' ub-select--exiting' : ''}`}>
+      <div
+        className="ub-select__header"
+        style={exiting ? { opacity: 0, transform: 'translateY(-60px)', transition: 'all 0.4s ease-in' } : undefined}
+      >
         <div className="ub-select__title">{t('pickCards')}</div>
         <div className="ub-select__counter">
           {[0, 1, 2].map(i => (
@@ -41,14 +67,20 @@ const SelectScreen = memo(function SelectScreen({ selected, onToggle, onConfirm 
       </div>
 
       <div className="ub-select__grid">
-        {CHARACTERS.map(char => {
+        {CHARACTERS.map((char, idx) => {
           const sel = isSelected(char)
           const beats = BEATS[char.element]
+          const ex = exitStyles[idx]
           return (
             <div
               key={char.id}
               className={`ub-select__card${sel ? ' ub-select__card--selected' : ''}`}
-              onPointerDown={() => onToggle(char)}
+              onPointerDown={!exiting ? () => onToggle(char) : undefined}
+              style={exiting ? {
+                transform: `translate(${ex.x}px, ${ex.y}px) rotate(${ex.rotate}deg)`,
+                opacity: 0,
+                transition: `transform ${ex.duration}s cubic-bezier(0.4, 0, 1, 1) ${ex.delay}s, opacity ${ex.duration * 0.8}s ease ${ex.delay}s`,
+              } : undefined}
             >
               <div className={`ub-select__card-inner ub-select__card-inner--${char.element}`}>
                 {sel && <div className="ub-select__card-check">✓</div>}
@@ -87,8 +119,9 @@ const SelectScreen = memo(function SelectScreen({ selected, onToggle, onConfirm 
 
       <button
         className={`ub-select__btn${canConfirm ? ' ub-select__btn--ready' : ''}`}
-        onPointerDown={canConfirm ? onConfirm : undefined}
+        onPointerDown={canConfirm && !exiting ? onConfirm : undefined}
         disabled={!canConfirm}
+        style={exiting ? { opacity: 0, transform: 'translateY(60px)', transition: 'all 0.4s ease-in' } : undefined}
       >
         {t('battleBtn')}
       </button>

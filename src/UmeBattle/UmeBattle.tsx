@@ -25,15 +25,16 @@ const UmeBattle = memo(
         <div className="ub__bg" />
         <img className="ub__watermark" src={aigramSrc} alt="" draggable={false} />
 
-        {phase === 'start' && (
-          <StartScreen onStart={goToSelect} />
+        {(phase === 'start' || phase === 'start_exit') && (
+          <StartScreen onStart={goToSelect} exiting={phase === 'start_exit'} />
         )}
 
-        {phase === 'select' && (
+        {(phase === 'select' || phase === 'select_exit') && (
           <SelectScreen
             selected={selected}
             onToggle={toggleSelect}
             onConfirm={confirmSelection}
+            exiting={phase === 'select_exit'}
           />
         )}
 

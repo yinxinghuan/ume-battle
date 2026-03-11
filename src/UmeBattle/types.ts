@@ -1,7 +1,7 @@
 export const FIELD_W = 390
 export const FIELD_H = 680
 
-export type GamePhase = 'start' | 'select' | 'battle' | 'result'
+export type GamePhase = 'start' | 'start_exit' | 'select' | 'select_exit' | 'battle' | 'result'
 export type Element = 'fire' | 'water' | 'nature'
 
 export interface Skill {

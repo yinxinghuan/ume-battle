@@ -513,6 +513,16 @@
     &--ai {
       cursor: default;
     }
+
+    // Staggered entrance: slide in from top
+    &--enter-top {
+      animation: ub-hand-enter-top 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    // Staggered entrance: slide in from bottom
+    &--enter-bot {
+      animation: ub-hand-enter-bot 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
   }
 }
 
@@ -809,6 +819,28 @@
   }
   100% {
     transform: translateY(0) scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+// Hand card enters from top (AI)
+@keyframes ub-hand-enter-top {
+  0% {
+    opacity: 0;
+    transform: translateY(-200px) rotate(0) !important;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// Hand card enters from bottom (player)
+@keyframes ub-hand-enter-bot {
+  0% {
+    opacity: 0;
+    transform: translateY(200px) rotate(0) !important;
+  }
+  100% {
     opacity: 1;
   }
 }

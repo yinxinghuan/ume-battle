@@ -170,13 +170,16 @@ const BattleScreen = memo(function BattleScreen({ battle, onPlay }: Props) {
         <div className="ub-battle__hand-fan ub-battle__hand-fan--ai">
           {aiHand.map((c, idx) => {
             const { angle, offsetY } = getFanStyle(idx, aiHand.length)
+            // Stagger entrance on first round only
+            const enterDelay = roundIndex === 0 ? `${0.1 + idx * 0.15}s` : '0s'
             return (
               <div
                 key={c.id}
-                className="ub-battle__hand-slot ub-battle__hand-slot--ai"
+                className={`ub-battle__hand-slot ub-battle__hand-slot--ai${roundIndex === 0 ? ' ub-battle__hand-slot--enter-top' : ''}`}
                 style={{
                   transform: `rotate(${angle}deg) translateY(${offsetY}px)`,
                   zIndex: aiHand.length === 3 && idx === 1 ? 2 : 1,
+                  animationDelay: enterDelay,
                 }}
               >
                 <CardBack size="md" />
@@ -343,13 +346,21 @@ const BattleScreen = memo(function BattleScreen({ battle, onPlay }: Props) {
         <div className="ub-battle__hand-fan">
           {playerHand.map((char, idx) => {
             const { angle, offsetY } = getFanStyle(idx, playerHand.length)
+            // Stagger entrance on first round only
+            const enterDelay = roundIndex === 0 && playerHand.length === 3
+              ? `${0.3 + idx * 0.15}s` : '0s'
             return (
               <div
                 key={char.id}
-                className={`ub-battle__hand-slot${roundPhase !== 'picking' ? ' ub-battle__hand-slot--disabled' : ''}`}
+                className={[
+                  'ub-battle__hand-slot',
+                  roundPhase !== 'picking' ? 'ub-battle__hand-slot--disabled' : '',
+                  roundIndex === 0 && playerHand.length === 3 ? 'ub-battle__hand-slot--enter-bot' : '',
+                ].join(' ')}
                 style={{
                   transform: `rotate(${angle}deg) translateY(${offsetY}px)`,
                   zIndex: playerHand.length === 3 && idx === 1 ? 2 : 1,
+                  animationDelay: enterDelay,
                 }}
                 onPointerDown={() => roundPhase === 'picking' && onPlay(char)}
               >
