@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import type { BattleState, Character, Element } from '../types'
 import { t } from '../i18n'
 import logoSrc from '../img/ume_logo.png'
@@ -125,6 +125,7 @@ const BattleScreen = memo(function BattleScreen({ battle, onPlay }: Props) {
     playerSkillTriggered, aiSkillTriggered,
   } = battle
 
+  const [showHelp, setShowHelp] = useState(false)
   const roundLabel = `${t('round')}${roundIndex + 1}${t('roundSuffix')}`
   const isRevealing = roundPhase.startsWith('reveal_') || roundPhase === 'ai_flipping'
   const isFlipped = roundPhase.startsWith('reveal_')
@@ -163,6 +164,7 @@ const BattleScreen = memo(function BattleScreen({ battle, onPlay }: Props) {
           </div>
           <span className="ub-battle__hud-label">{t('aiLabel')}</span>
         </div>
+        <button className="ub-battle__help-btn" onPointerDown={() => setShowHelp(true)}>?</button>
       </div>
 
       {/* AI remaining cards — fan layout */}
@@ -370,6 +372,23 @@ const BattleScreen = memo(function BattleScreen({ battle, onPlay }: Props) {
           })}
         </div>
       </div>
+
+      {/* Help modal */}
+      {showHelp && (
+        <div className="ub-battle__help-overlay" onPointerDown={() => setShowHelp(false)}>
+          <div className="ub-battle__help-modal" onPointerDown={e => e.stopPropagation()}>
+            <div className="ub-battle__help-title">{t('helpTitle')}</div>
+            <div className="ub-battle__help-body">
+              {t('helpBody').split('\n').map((line, i) => (
+                <span key={i}>{line}<br /></span>
+              ))}
+            </div>
+            <button className="ub-battle__help-close" onPointerDown={() => setShowHelp(false)}>
+              {t('helpClose')}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 })

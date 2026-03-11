@@ -31,6 +31,9 @@ const STRINGS = {
     skill_boba_charge: '奶茶充能',
     skill_seed_counter: '种子反击',
     skill_underdog: '绝地逆袭',
+    helpTitle: '玩法说明',
+    helpClose: '知道了',
+    helpBody: '选择 3 张角色牌与 AI 对决，共 3 回合。\n\n⚔️ 属性克制\n火 › 草 › 水 › 火\n克制方 ATK+2\n\n💥 暴击\n基础暴击率 20%，暴击时伤害 ×1.5\n\n🎯 技能\n每张牌有独特被动技能，战斗中自动触发\n\n🏆 胜负\n每回合 ATK 高者获胜，先赢 2 回合获得最终胜利',
   },
   en: {
     title1: 'UMe',
@@ -64,6 +67,9 @@ const STRINGS = {
     skill_boba_charge: 'Boba Charge',
     skill_seed_counter: 'Seed Counter',
     skill_underdog: 'Underdog',
+    helpTitle: 'HOW TO PLAY',
+    helpClose: 'GOT IT',
+    helpBody: 'Pick 3 cards to battle AI in 3 rounds.\n\n⚔️ Element Counter\nFire › Nature › Water › Fire\nCounter gives ATK+2\n\n💥 Critical Hit\nBase crit rate 20%, crit deals ×1.5 damage\n\n🎯 Skills\nEach card has a unique passive skill that triggers automatically\n\n🏆 Victory\nHigher ATK wins each round. First to win 2 rounds wins the match',
   },
 } as const
 
