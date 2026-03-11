@@ -378,11 +378,45 @@ const BattleScreen = memo(function BattleScreen({ battle, onPlay }: Props) {
         <div className="ub-battle__help-overlay" onPointerDown={() => setShowHelp(false)}>
           <div className="ub-battle__help-modal" onPointerDown={e => e.stopPropagation()}>
             <div className="ub-battle__help-title">{t('helpTitle')}</div>
+
             <div className="ub-battle__help-body">
-              {t('helpBody').split('\n').map((line, i) => (
-                <span key={i}>{line}<br /></span>
-              ))}
+              {/* Intro */}
+              <p className="ub-battle__help-text">{t('helpIntro')}</p>
+
+              {/* Element counter */}
+              <div className="ub-battle__help-section">
+                <div className="ub-battle__help-label ub-battle__help-label--green">{t('helpElement')}</div>
+                <div className="ub-battle__help-chain">
+                  <img className="ub-battle__help-icon" src={fireIcon} alt="" draggable={false} />
+                  <span className="ub-battle__help-arrow">›</span>
+                  <img className="ub-battle__help-icon" src={natureIcon} alt="" draggable={false} />
+                  <span className="ub-battle__help-arrow">›</span>
+                  <img className="ub-battle__help-icon" src={waterIcon} alt="" draggable={false} />
+                  <span className="ub-battle__help-arrow">›</span>
+                  <img className="ub-battle__help-icon" src={fireIcon} alt="" draggable={false} />
+                </div>
+                <p className="ub-battle__help-text">{t('helpElementDesc')}</p>
+              </div>
+
+              {/* Crit */}
+              <div className="ub-battle__help-section">
+                <div className="ub-battle__help-label ub-battle__help-label--yellow">{t('helpCrit')}</div>
+                <p className="ub-battle__help-text">{t('helpCritDesc')}</p>
+              </div>
+
+              {/* Skills */}
+              <div className="ub-battle__help-section">
+                <div className="ub-battle__help-label ub-battle__help-label--purple">{t('helpSkill')}</div>
+                <p className="ub-battle__help-text">{t('helpSkillDesc')}</p>
+              </div>
+
+              {/* Victory */}
+              <div className="ub-battle__help-section">
+                <div className="ub-battle__help-label ub-battle__help-label--gold">{t('helpVictory')}</div>
+                <p className="ub-battle__help-text">{t('helpVictoryDesc')}</p>
+              </div>
             </div>
+
             <button className="ub-battle__help-close" onPointerDown={() => setShowHelp(false)}>
               {t('helpClose')}
             </button>
