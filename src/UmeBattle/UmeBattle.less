@@ -1,0 +1,39 @@
+.ub {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #0d0618 0%, #1a0a2e 50%, #2d1535 100%);
+    z-index: 0;
+
+    // Subtle sparkle texture
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.12) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 10%, rgba(255,255,255,0.08) 0%, transparent 100%),
+        radial-gradient(1px 1px at 45% 60%, rgba(255,255,255,0.10) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 75%, rgba(255,255,255,0.07) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 85%, rgba(255,255,255,0.09) 0%, transparent 100%);
+      pointer-events: none;
+    }
+  }
+
+  &__watermark {
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    width: 60px;
+    opacity: 0.18;
+    z-index: 50;
+    pointer-events: none;
+    draggable: false;
+  }
+}
