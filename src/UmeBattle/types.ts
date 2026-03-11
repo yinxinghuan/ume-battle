@@ -46,7 +46,7 @@ export const CHARACTERS: Character[] = [
 ]
 
 export type RoundResult = 'player' | 'ai' | 'draw'
-export type RoundPhase  = 'picking' | 'flipping' | 'revealed'
+export type RoundPhase  = 'ai_placing' | 'picking' | 'flipping' | 'ai_flipping' | 'reveal_element' | 'reveal_skill' | 'reveal_atk' | 'reveal_result'
 export type ElementResult = 'advantage' | 'disadvantage' | 'neutral'
 
 export interface RoundRecord {

@@ -60,7 +60,7 @@ const SelectScreen = memo(function SelectScreen({ selected, onToggle, onConfirm 
                 />
                 <img
                   className="ub-select__card-img"
-                  src={`sprites/${char.id}.png`}
+                  src={sel ? `sprites/${char.id}_selected.png` : `sprites/${char.id}.png`}
                   alt={char.name}
                   draggable={false}
                 />

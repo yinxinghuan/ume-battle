@@ -43,7 +43,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px 8px;
+    padding: 10px 16px 6px;
   }
 
   &__hud-side {
@@ -78,49 +78,40 @@
     &--lose { background: #ef4444; border-color: #f87171; box-shadow: 0 0 8px rgba(239,68,68,0.7); }
   }
 
-  // ── AI hand ─────────────────────────────────────────────────────────────
+  // ── AI hand (remaining cards — fan layout) ─────────────────────────────
   &__ai-hand {
     position: relative;
     z-index: 2;
     display: flex;
-    gap: 10px;
     justify-content: center;
-    min-height: 70px;
-    align-items: center;
-    margin-top: 4px;
+    align-items: flex-start;
+    height: 110px;
   }
 
-  // ── Arena ───────────────────────────────────────────────────────────────
+  // ── Arena — vertical layout ────────────────────────────────────────────
   &__arena {
     position: relative;
     z-index: 2;
     flex: 1;
     width: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 4px 10px;
+    gap: 4px;
+    padding: 4px 16px;
   }
 
-  &__arena-side {
+  &__arena-row {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-  }
-
-  &__arena-center {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
+    gap: 4px;
   }
 
   &__arena-slot {
-    width: 120px;
-    height: 120px;
+    width: 170px;
+    height: 170px;
     border-radius: 16px;
     border: 2px dashed rgba(255,255,255,0.1);
     display: flex;
@@ -129,12 +120,79 @@
     transition: border 0.2s;
 
     &--active { border: none; }
+
+    // Player card loser: tilt the other way
+    &--loser {
+      transform: rotate(-8deg) translateX(-10px);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    // Player card winner: shift up toward center
+    &--winner-bot {
+      transform: translateY(-12px);
+      z-index: 5;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
   }
 
   &__arena-empty {
     font-family: 'Press Start 2P', monospace;
     font-size: 8px;
     color: rgba(255,255,255,0.15);
+  }
+
+  // ── 3D Flip container for AI card ──────────────────────────────────────
+  &__flip {
+    width: 170px;
+    height: 170px;
+    perspective: 800px;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    &--fly-down {
+      animation: ub-fly-down 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    // Loser AI card tilts
+    &--loser {
+      transform: rotate(8deg) translateX(10px);
+    }
+
+    // Winner AI card shifts down toward center
+    &--winner-top {
+      transform: translateY(12px);
+      z-index: 5;
+    }
+  }
+
+  &__flip-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &__flip--flipped &__flip-inner {
+    transform: rotateY(180deg);
+  }
+
+  &__flip-back,
+  &__flip-front {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  &__flip-front {
+    transform: rotateY(180deg);
+  }
+
+  &__arena-mid {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
   }
 
   &__vs {
@@ -145,78 +203,266 @@
     transition: all 0.3s;
 
     &--active {
-      font-size: 18px;
+      font-size: 16px;
       color: #f59e0b;
       text-shadow: 0 0 20px rgba(245,158,11,0.7);
     }
   }
 
-  // Counter tag between cards
+  // Counter tag (element advantage)
   &__counter-tag {
     font-family: 'Press Start 2P', monospace;
-    font-size: 7px;
+    font-size: 11px;
     color: #22c55e;
-    background: rgba(34, 197, 94, 0.15);
-    border: 1px solid rgba(34, 197, 94, 0.3);
-    border-radius: 4px;
-    padding: 2px 6px;
-    animation: ub-tag-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: rgba(34, 197, 94, 0.2);
+    border: 1.5px solid rgba(34, 197, 94, 0.5);
+    border-radius: 6px;
+    padding: 6px 14px;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+    box-shadow: 0 0 16px rgba(34, 197, 94, 0.3);
+    animation: ub-tag-slam 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 
     &--bad {
       color: #ef4444;
-      background: rgba(239, 68, 68, 0.12);
-      border-color: rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.5);
+      text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.3);
     }
   }
 
   // Skill activation tag
   &__skill-tag {
     font-family: 'Noto Sans SC', sans-serif;
-    font-size: 9px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 800;
     color: #fbbf24;
-    background: rgba(245, 158, 11, 0.15);
-    border: 1px solid rgba(245, 158, 11, 0.3);
-    border-radius: 6px;
-    padding: 2px 8px;
+    background: rgba(245, 158, 11, 0.2);
+    border: 1.5px solid rgba(245, 158, 11, 0.5);
+    border-radius: 8px;
+    padding: 5px 12px;
     white-space: nowrap;
-    animation: ub-tag-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-shadow: 0 0 8px rgba(245, 158, 11, 0.7);
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.25);
+    animation: ub-tag-slam 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 
     &--ai {
       color: #c084fc;
-      background: rgba(168, 85, 247, 0.15);
-      border-color: rgba(168, 85, 247, 0.3);
+      background: rgba(168, 85, 247, 0.2);
+      border-color: rgba(168, 85, 247, 0.5);
+      text-shadow: 0 0 8px rgba(168, 85, 247, 0.7);
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.25);
     }
   }
 
-  // ── Round result ────────────────────────────────────────────────────────
-  &__result {
-    position: relative;
-    z-index: 10;
+  // ── Centered showcase overlay ──────────────────────────────────────
+  &__showcase {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  // Shared showcase item container
+  &__sc-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    animation: ub-sc-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  // Step 1: Element matchup
+  &__sc-element {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__sc-element-icon {
+    width: 48px;
+    height: 48px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.4));
+  }
+
+  &__sc-element-arrow {
+    font-size: 36px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1;
+    text-shadow: 0 0 8px rgba(255,255,255,0.3);
+  }
+
+  &__sc-counter {
     font-family: 'Press Start 2P', monospace;
     font-size: 18px;
     letter-spacing: 0.1em;
-    padding: 8px 24px;
+    padding: 8px 20px;
     border-radius: 8px;
-    animation: ub-result-slam 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    &--player {
+    &--good {
       color: #22c55e;
-      background: rgba(34,197,94,0.15);
-      text-shadow: 0 0 16px rgba(34,197,94,0.8);
+      background: rgba(34,197,94,0.2);
+      border: 2px solid rgba(34,197,94,0.5);
+      text-shadow: 0 0 16px rgba(34,197,94,0.9);
+      box-shadow: 0 0 30px rgba(34,197,94,0.3);
     }
-    &--ai {
+
+    &--bad {
       color: #ef4444;
-      background: rgba(239,68,68,0.12);
-      text-shadow: 0 0 12px rgba(239,68,68,0.6);
-    }
-    &--draw {
-      color: rgba(255,255,255,0.5);
-      background: rgba(255,255,255,0.05);
+      background: rgba(239,68,68,0.18);
+      border: 2px solid rgba(239,68,68,0.5);
+      text-shadow: 0 0 16px rgba(239,68,68,0.9);
+      box-shadow: 0 0 30px rgba(239,68,68,0.3);
     }
   }
 
-  // ── Player hand ─────────────────────────────────────────────────────────
+  // Step 2: Skill activation
+  &__sc-skill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 20px;
+    background: rgba(245,158,11,0.15);
+    border: 2px solid rgba(245,158,11,0.4);
+    border-radius: 10px;
+    box-shadow: 0 0 24px rgba(245,158,11,0.25);
+    animation: ub-sc-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    &--ai {
+      background: rgba(168,85,247,0.15);
+      border-color: rgba(168,85,247,0.4);
+      box-shadow: 0 0 24px rgba(168,85,247,0.25);
+
+      .ub-battle__sc-skill-label {
+        color: #c084fc;
+        text-shadow: 0 0 12px rgba(168,85,247,0.8);
+      }
+    }
+  }
+
+  &__sc-skill-name {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.6);
+  }
+
+  &__sc-skill-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: #fbbf24;
+    text-shadow: 0 0 12px rgba(245,158,11,0.8);
+  }
+
+  // Step 3: ATK comparison
+  &__sc-atk {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__sc-atk-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__sc-atk-num {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 36px;
+    color: #f59e0b;
+    text-shadow: 0 0 20px rgba(245,158,11,0.8), 0 0 40px rgba(245,158,11,0.4);
+    animation: ub-sc-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  &__sc-atk-crit {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: #fbbf24;
+    background: rgba(127,29,29,0.95);
+    border: 1.5px solid rgba(245,158,11,0.5);
+    border-radius: 4px;
+    padding: 3px 8px;
+    box-shadow: 0 0 14px rgba(245,158,11,0.8);
+    animation: ub-sc-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+  }
+
+  &__sc-atk-vs {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  // Step 4: Final result — HUGE
+  &__sc-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 40px;
+    border-radius: 16px;
+    animation: ub-sc-result-slam 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    &--player {
+      background: linear-gradient(135deg, rgba(34,197,94,0.3), rgba(16,185,129,0.15));
+      border: 3px solid rgba(34,197,94,0.7);
+      box-shadow:
+        0 0 60px rgba(34,197,94,0.5),
+        0 0 120px rgba(34,197,94,0.2),
+        inset 0 0 30px rgba(34,197,94,0.1);
+
+      .ub-battle__sc-result-text {
+        color: #fff;
+        text-shadow:
+          0 0 30px rgba(34,197,94,1),
+          0 0 60px rgba(34,197,94,0.6),
+          0 0 100px rgba(34,197,94,0.3);
+      }
+    }
+
+    &--ai {
+      background: linear-gradient(135deg, rgba(239,68,68,0.25), rgba(220,38,38,0.15));
+      border: 3px solid rgba(239,68,68,0.7);
+      box-shadow:
+        0 0 60px rgba(239,68,68,0.5),
+        0 0 120px rgba(239,68,68,0.2),
+        inset 0 0 30px rgba(239,68,68,0.1);
+
+      .ub-battle__sc-result-text {
+        color: #fff;
+        text-shadow:
+          0 0 30px rgba(239,68,68,1),
+          0 0 60px rgba(239,68,68,0.6),
+          0 0 100px rgba(239,68,68,0.3);
+      }
+    }
+
+    &--draw {
+      background: rgba(255,255,255,0.06);
+      border: 3px solid rgba(255,255,255,0.2);
+      box-shadow: 0 0 40px rgba(255,255,255,0.1);
+
+      .ub-battle__sc-result-text {
+        color: rgba(255,255,255,0.8);
+        text-shadow: 0 0 20px rgba(255,255,255,0.5);
+      }
+    }
+  }
+
+  &__sc-result-text {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 40px;
+    letter-spacing: 0.15em;
+    line-height: 1;
+  }
+
+  // ── Player hand — fan layout ──────────────────────────────────────────
   &__hand {
     position: relative;
     z-index: 2;
@@ -225,7 +471,7 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    padding: 0 12px 16px;
+    padding: 0 12px 14px;
   }
 
   &__hand-hint {
@@ -236,10 +482,18 @@
     animation: ub-hint-pulse 1.5s ease-in-out infinite;
   }
 
-  &__hand-row {
+  &__hand-fan {
     display: flex;
-    gap: 10px;
     justify-content: center;
+    align-items: flex-end;
+    gap: 0;
+    padding: 0 20px;
+    min-height: 120px;
+
+    &--ai {
+      align-items: flex-end;
+      transform: rotate(180deg);
+    }
   }
 
   &__hand-slot {
@@ -248,17 +502,20 @@
     user-select: none;
     touch-action: none;
     transition: transform 0.15s;
+    transform-origin: center bottom;
+    // Overlap cards slightly
+    margin: 0 -6px;
 
     &:active:not(&--disabled) {
-      transform: translateY(-8px) scale(1.05);
-    }
-
-    &:not(&--disabled):hover {
-      transform: translateY(-4px);
+      transform: translateY(-14px) scale(1.08) !important;
     }
 
     &--disabled {
-      opacity: 0.45;
+      pointer-events: none;
+      cursor: default;
+    }
+
+    &--ai {
       cursor: default;
     }
   }
@@ -301,8 +558,8 @@
   }
 
   &--sm  { width: 72px;  aspect-ratio: 1/1; }
-  &--md  { width: 90px;  aspect-ratio: 1/1; }
-  &--lg  { width: 120px; aspect-ratio: 1/1; }
+  &--md  { width: 100px; aspect-ratio: 1/1; }
+  &--lg  { width: 170px; aspect-ratio: 1/1; }
 
   &__element {
     position: absolute;
@@ -315,14 +572,14 @@
   }
 
   &__img {
-    width: 130%;
-    height: 130%;
+    width: 110%;
+    height: 110%;
     object-fit: cover;
-    object-position: center 15%;
+    object-position: center top;
     display: block;
     pointer-events: none;
     position: absolute;
-    top: 0;
+    top: -10%;
     left: 50%;
     transform: translateX(-50%);
   }
@@ -339,7 +596,7 @@
 
   &__name {
     font-family: 'Noto Sans SC', sans-serif;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 900;
     color: #fff;
     text-shadow: 0 2px 4px rgba(0,0,0,0.8);
@@ -348,7 +605,7 @@
 
   &__meta {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
   }
 
@@ -360,10 +617,14 @@
   }
 
   &__atk {
+    position: absolute;
+    right: 7px;
+    bottom: 5px;
     font-family: 'Press Start 2P', monospace;
     font-size: 14px;
     color: #f59e0b;
     text-shadow: 0 0 6px rgba(245,158,11,0.5);
+    line-height: 1;
   }
 
   &__counter {
@@ -402,39 +663,51 @@
     line-height: 1;
   }
 
-  &--lg &__name { font-size: 14px; }
-  &--lg &__atk  { font-size: 18px; }
-  &--lg &__skill { font-size: 9px; }
-  &--lg &__counter-icon { width: 14px; height: 14px; }
-  &--lg &__counter-x { font-size: 16px; }
-  &--lg &__element { width: 38px; top: 6px; left: 6px; }
+  // Large card overrides
+  &--lg &__name { font-size: 16px; }
+  &--lg &__atk  { font-size: 20px; right: 8px; bottom: 6px; }
+  &--lg &__skill { font-size: 10px; }
+  &--lg &__info { padding: 32px 8px 6px; }
+  &--lg &__counter-icon { width: 16px; height: 16px; }
+  &--lg &__counter-x { font-size: 18px; }
+  &--lg &__element { width: 40px; top: 6px; left: 6px; }
+  &--lg &__img { width: 130%; height: 130%; }
 
   &__crit {
     position: absolute;
-    top: 6px; left: 50%;
+    top: 8px; left: 50%;
     transform: translateX(-50%);
     font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
+    font-size: 12px;
     color: #fbbf24;
-    background: rgba(127, 29, 29, 0.9);
-    border-radius: 4px;
-    padding: 3px 8px;
+    background: rgba(127, 29, 29, 0.95);
+    border: 1.5px solid rgba(245,158,11,0.5);
+    border-radius: 6px;
+    padding: 5px 12px;
     white-space: nowrap;
     z-index: 5;
-    box-shadow: 0 0 12px rgba(245,158,11,0.8);
-    animation: ub-crit-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 20px rgba(245,158,11,0.9);
+    text-shadow: 0 0 8px rgba(245,158,11,0.8);
+    animation: ub-crit-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  // Fly from player hand (bottom) with bounce
+  &--fly-up {
+    animation: ub-fly-up 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  // Fly from AI hand (top) with bounce
+  &--fly-down {
+    animation: ub-fly-down 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   &--winner {
     border-color: #22c55e;
     box-shadow: 0 0 30px rgba(34,197,94,0.6), 0 8px 20px rgba(0,0,0,0.5);
-    transform: scale(1.06);
   }
   &--loser {
     border-color: #ef4444;
     box-shadow: 0 0 16px rgba(239,68,68,0.35);
-    opacity: 0.65;
-    transform: scale(0.94);
   }
 }
 
@@ -450,8 +723,9 @@
   position: relative;
   overflow: hidden;
 
-  &--sm { width: 54px;  aspect-ratio: 1/1; }
-  &--lg { width: 120px; aspect-ratio: 1/1; }
+  &--sm { width: 46px;  aspect-ratio: 1/1; }
+  &--md { width: 100px; aspect-ratio: 1/1; }
+  &--lg { width: 170px; aspect-ratio: 1/1; }
 
   &__pattern {
     position: absolute;
@@ -475,6 +749,10 @@
     z-index: 1;
     pointer-events: none;
   }
+
+  &--fly-down {
+    animation: ub-fly-down 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 }
 
 // ── Animations ────────────────────────────────────────────────────────────
@@ -483,9 +761,26 @@
   100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
-@keyframes ub-result-slam {
-  0%   { transform: scale(2); opacity: 0; }
+// Showcase pop-in
+@keyframes ub-sc-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+// Showcase result — mega slam
+@keyframes ub-sc-result-slam {
+  0%   { transform: scale(4) rotate(-8deg); opacity: 0; filter: blur(8px); }
+  40%  { transform: scale(0.85) rotate(2deg); opacity: 1; filter: blur(0); }
+  60%  { transform: scale(1.1) rotate(-1deg); }
+  80%  { transform: scale(0.97) rotate(0); }
+  100% { transform: scale(1) rotate(0); opacity: 1; filter: blur(0); }
+}
+
+@keyframes ub-tag-slam {
+  0%   { transform: scale(0) rotate(-10deg); opacity: 0; }
+  60%  { transform: scale(1.1) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
 }
 
 @keyframes ub-crit-pop {
@@ -498,7 +793,27 @@
   50%       { opacity: 0.7;  }
 }
 
-@keyframes ub-tag-pop {
-  0%   { transform: scale(0.5); opacity: 0; }
-  100% { transform: scale(1);   opacity: 1; }
+
+// Card flies up from player hand
+@keyframes ub-fly-up {
+  0% {
+    transform: translateY(180px) scale(0.7) rotate(6deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+// Card flies down from AI hand
+@keyframes ub-fly-down {
+  0% {
+    transform: translateY(-160px) scale(0.7) rotate(-6deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1) rotate(0);
+    opacity: 1;
+  }
 }

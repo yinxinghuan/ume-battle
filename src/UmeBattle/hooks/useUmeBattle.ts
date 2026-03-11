@@ -118,11 +118,14 @@ function resolveCombat(pCard: Character, aCard: Character) {
 }
 
 function makeBattle(playerHand: Character[], aiHand: Character[]): BattleState {
+  // AI places first card immediately
+  const aiCard = aiHand[Math.floor(Math.random() * aiHand.length)]
   return {
-    playerHand, aiHand,
+    playerHand,
+    aiHand: aiHand.filter(c => c.id !== aiCard.id),
     playerScore: 0, aiScore: 0,
-    roundIndex: 0, roundPhase: 'picking',
-    playerCard: null, aiCard: null,
+    roundIndex: 0, roundPhase: 'ai_placing',
+    playerCard: null, aiCard,
     isCrit: false, isAiCrit: false,
     roundWinner: null, history: [],
     playerEffAtk: 0, aiEffAtk: 0,
@@ -166,76 +169,122 @@ export function useUmeBattle() {
     setSelected(sel => {
       if (sel.length !== 3) return sel
       const aiHand = CHARACTERS.filter(c => !sel.find(s => s.id === c.id))
-      setBattle(makeBattle([...sel], aiHand))
+      const b = makeBattle([...sel], aiHand)
+      setBattle(b)
       setPhase('battle')
+      // AI card fly-down animation → then player can pick
+      addTimer(() => {
+        setBattle(prev => prev ? { ...prev, roundPhase: 'picking' } : prev)
+      }, 800)
       return sel
     })
-  }, [])
+  }, [addTimer])
+
+  // Helper: start a new round with AI placing first
+  const startNextRound = useCallback((prev: BattleState): void => {
+    const nextRound = prev.roundIndex + 1
+    const isOver = prev.playerScore >= 2 || prev.aiScore >= 2 || prev.playerHand.length === 0
+    if (isOver) {
+      setPhase('result')
+      return
+    }
+    // AI picks next card
+    const nextAiCard = prev.aiHand[Math.floor(Math.random() * prev.aiHand.length)]
+    setBattle({
+      ...prev,
+      roundIndex: nextRound,
+      roundPhase: 'ai_placing',
+      playerCard: null,
+      aiCard: nextAiCard,
+      aiHand: prev.aiHand.filter(c => c.id !== nextAiCard.id),
+      roundWinner: null,
+      isCrit: false, isAiCrit: false,
+      playerEffAtk: 0, aiEffAtk: 0,
+      elementResult: 'neutral',
+      playerSkillTriggered: false,
+      aiSkillTriggered: false,
+    })
+    // After AI card animation, let player pick
+    addTimer(() => {
+      setBattle(p => p ? { ...p, roundPhase: 'picking' } : p)
+    }, 800)
+  }, [addTimer])
 
   // ── Battle phase ─────────────────────────────────────────────────────────
   const playCard = useCallback((char: Character) => {
+    // Player places card → flipping phase
     setBattle(prev => {
       if (!prev || prev.roundPhase !== 'picking') return prev
-      const aiCard = prev.aiHand[Math.floor(Math.random() * prev.aiHand.length)]
-      return { ...prev, roundPhase: 'flipping', playerCard: char, aiCard }
+      return {
+        ...prev,
+        roundPhase: 'flipping',
+        playerCard: char,
+        playerHand: prev.playerHand.filter(c => c.id !== char.id),
+      }
     })
 
-    // Flip → reveal
+    // Player card lands → AI card starts flipping
     addTimer(() => {
-      setBattle(prev => {
-        if (!prev || !prev.playerCard || !prev.aiCard) return prev
-        const result = resolveCombat(prev.playerCard, prev.aiCard)
+      setBattle(prev => prev ? { ...prev, roundPhase: 'ai_flipping' } : prev)
 
-        return {
-          ...prev,
-          roundPhase: 'revealed',
-          isCrit: result.pCrit,
-          isAiCrit: result.aCrit,
-          roundWinner: result.winner,
-          playerEffAtk: result.pEffAtk,
-          aiEffAtk: result.aEffAtk,
-          elementResult: result.elResult,
-          playerSkillTriggered: result.pSkill,
-          aiSkillTriggered: result.aSkill,
-          playerScore: prev.playerScore + (result.winner === 'player' ? 1 : 0),
-          aiScore: prev.aiScore + (result.winner === 'ai' ? 1 : 0),
-          history: [...prev.history, {
-            playerCard: prev.playerCard!,
-            aiCard: prev.aiCard!,
-            result: result.winner,
-          }],
-          playerHand: prev.playerHand.filter(c => c.id !== prev.playerCard!.id),
-          aiHand: prev.aiHand.filter(c => c.id !== prev.aiCard!.id),
-        }
-      })
-
-      // Advance to next round or result
+      // Step 1: AI flip completes → resolve combat & show element
       addTimer(() => {
         setBattle(prev => {
-          if (!prev) return prev
-          const nextRound = prev.roundIndex + 1
-          const isOver =
-            prev.playerScore >= 2 || prev.aiScore >= 2 || prev.playerHand.length === 0
-          if (isOver) {
-            setPhase('result')
-            return prev
-          }
+          if (!prev || !prev.playerCard || !prev.aiCard) return prev
+          const result = resolveCombat(prev.playerCard, prev.aiCard)
           return {
             ...prev,
-            roundIndex: nextRound,
-            roundPhase: 'picking',
-            playerCard: null, aiCard: null,
-            roundWinner: null,
-            isCrit: false, isAiCrit: false,
-            playerEffAtk: 0, aiEffAtk: 0,
-            elementResult: 'neutral',
-            playerSkillTriggered: false,
-            aiSkillTriggered: false,
+            roundPhase: 'reveal_element',
+            isCrit: result.pCrit,
+            isAiCrit: result.aCrit,
+            roundWinner: result.winner,
+            playerEffAtk: result.pEffAtk,
+            aiEffAtk: result.aEffAtk,
+            elementResult: result.elResult,
+            playerSkillTriggered: result.pSkill,
+            aiSkillTriggered: result.aSkill,
           }
         })
-      }, 2000)
-    }, 700)
-  }, [addTimer])
+
+        // Step 2: Show skill activation
+        addTimer(() => {
+          setBattle(prev => prev ? { ...prev, roundPhase: 'reveal_skill' } : prev)
+
+          // Step 3: Show ATK values + crit
+          addTimer(() => {
+            setBattle(prev => prev ? { ...prev, roundPhase: 'reveal_atk' } : prev)
+
+            // Step 4: Show result + update score
+            addTimer(() => {
+              setBattle(prev => {
+                if (!prev) return prev
+                return {
+                  ...prev,
+                  roundPhase: 'reveal_result',
+                  playerScore: prev.playerScore + (prev.roundWinner === 'player' ? 1 : 0),
+                  aiScore: prev.aiScore + (prev.roundWinner === 'ai' ? 1 : 0),
+                  history: [...prev.history, {
+                    playerCard: prev.playerCard!,
+                    aiCard: prev.aiCard!,
+                    result: prev.roundWinner!,
+                  }],
+                }
+              })
+
+              // Advance to next round
+              addTimer(() => {
+                setBattle(prev => {
+                  if (!prev) return prev
+                  startNextRound(prev)
+                  return prev
+                })
+              }, 3500)
+            }, 1200) // ATK → result
+          }, 1000) // skill → ATK
+        }, 1000) // element → skill
+      }, 600) // flip animation duration
+    }, 800) // wait for player card to land
+  }, [addTimer, startNextRound])
 
   // ── Navigation ───────────────────────────────────────────────────────────
   const restart = useCallback(() => {
