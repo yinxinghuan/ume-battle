@@ -66,7 +66,7 @@ function CharCard({
       <div className="ub-card__info">
         <div className="ub-card__name">{char.name}</div>
         <div className="ub-card__meta">
-          <span className="ub-card__skill">{char.skill.name}</span>
+          <span className="ub-card__skill">{t(('skill_' + char.skill.id) as any)}</span>
           <span className="ub-card__atk">
             {showEffAtk ? effectiveAtk : char.atk}
             {crit ? '×1.5' : ''}
@@ -149,7 +149,7 @@ const BattleScreen = memo(function BattleScreen({ battle, onPlay }: Props) {
             }
           </div>
           {roundPhase === 'revealed' && playerSkillTriggered && playerCard && (
-            <div className="ub-battle__skill-tag">{playerCard.skill.name}</div>
+            <div className="ub-battle__skill-tag">{t(('skill_' + playerCard.skill.id) as any)}</div>
           )}
         </div>
 
@@ -179,7 +179,7 @@ const BattleScreen = memo(function BattleScreen({ battle, onPlay }: Props) {
             }
           </div>
           {roundPhase === 'revealed' && aiSkillTriggered && aiCard && (
-            <div className="ub-battle__skill-tag ub-battle__skill-tag--ai">{aiCard.skill.name}</div>
+            <div className="ub-battle__skill-tag ub-battle__skill-tag--ai">{t(('skill_' + aiCard.skill.id) as any)}</div>
           )}
         </div>
       </div>
@@ -195,7 +195,7 @@ const BattleScreen = memo(function BattleScreen({ battle, onPlay }: Props) {
       {/* Player hand */}
       <div className="ub-battle__hand">
         {roundPhase === 'picking' && (
-          <div className="ub-battle__hand-hint">▼ 出牌 ▼</div>
+          <div className="ub-battle__hand-hint">{t('playHint')}</div>
         )}
         <div className="ub-battle__hand-row">
           {playerHand.map(char => (

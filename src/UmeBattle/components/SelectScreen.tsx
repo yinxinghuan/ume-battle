@@ -67,7 +67,7 @@ const SelectScreen = memo(function SelectScreen({ selected, onToggle, onConfirm 
                 <div className="ub-select__card-info">
                   <div className="ub-select__card-name">{char.name}</div>
                   <div className="ub-select__card-meta">
-                    <span className="ub-select__card-skill">{char.skill.name}</span>
+                    <span className="ub-select__card-skill">{t(('skill_' + char.skill.id) as any)}</span>
                     <span className="ub-select__card-atk">{char.atk}</span>
                   </div>
                   <div className="ub-select__card-counter">

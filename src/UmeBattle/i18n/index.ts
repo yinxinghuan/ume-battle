@@ -24,6 +24,13 @@ const STRINGS = {
     fire: '火',
     water: '水',
     nature: '草',
+    playHint: '▼ 出牌 ▼',
+    skill_acid_burn: '酸液灼烧',
+    skill_angel_guard: '天使庇佑',
+    skill_nut_shield: '坚果盾',
+    skill_boba_charge: '奶茶充能',
+    skill_seed_counter: '种子反击',
+    skill_underdog: '绝地逆袭',
   },
   en: {
     title1: 'UMe',
@@ -50,6 +57,13 @@ const STRINGS = {
     fire: 'FIRE',
     water: 'WATER',
     nature: 'NATURE',
+    playHint: '▼ PLAY ▼',
+    skill_acid_burn: 'Acid Burn',
+    skill_angel_guard: 'Angel Guard',
+    skill_nut_shield: 'Nut Shield',
+    skill_boba_charge: 'Boba Charge',
+    skill_seed_counter: 'Seed Counter',
+    skill_underdog: 'Underdog',
   },
 } as const
 
