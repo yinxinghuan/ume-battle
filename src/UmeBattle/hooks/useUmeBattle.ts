@@ -1,6 +1,13 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type { GamePhase, Character, RoundResult, BattleState, Element, ElementResult } from '../types'
 import { CHARACTERS, FIELD_W, FIELD_H } from '../types'
+import {
+  resumeAudio, playTransition, playTap, playDeselect, playConfirm,
+  playCardPlay, playCardPlace, playCardFlip,
+  playCounter, playDisadvantage, playSkill, playAtkReveal, playCrit,
+  playRoundWin, playRoundLose, playRoundDraw,
+  playVictory, playDefeat,
+} from '../utils/sounds'
 
 const BASE_CRIT  = 0.20
 const COUNTER_BONUS = 2   // ATK bonus for element advantage
@@ -30,7 +37,6 @@ function resolveCombat(pCard: Character, aCard: Character) {
   // AI's nut_shield: if AI is countered, ignore counter
   if (elResult === 'advantage' && aCard.skill.id === 'nut_shield') {
     pElBonus = 0
-    // AI skill triggered
   }
   // Player acid_burn: counter gives +3 instead of +2
   if (elResult === 'advantage' && pCard.skill.id === 'acid_burn') {
@@ -154,6 +160,8 @@ export function useUmeBattle() {
 
   // ── Start → Select transition ───────────────────────────────────────
   const goToSelect = useCallback(() => {
+    resumeAudio()
+    playTransition()
     clearTimers()
     setPhase('start_exit')
     addTimer(() => {
@@ -163,8 +171,12 @@ export function useUmeBattle() {
 
   const toggleSelect = useCallback((char: Character) => {
     setSelected(prev => {
-      if (prev.find(c => c.id === char.id)) return prev.filter(c => c.id !== char.id)
+      if (prev.find(c => c.id === char.id)) {
+        playDeselect()
+        return prev.filter(c => c.id !== char.id)
+      }
       if (prev.length >= 3) return prev
+      playTap()
       return [...prev, char]
     })
   }, [])
@@ -172,14 +184,17 @@ export function useUmeBattle() {
   const confirmSelection = useCallback(() => {
     setSelected(sel => {
       if (sel.length !== 3) return sel
+      playConfirm()
       // Start exit animation
       setPhase('select_exit')
       // After cards fly out, switch to battle
       addTimer(() => {
+        playTransition()
         const aiHand = CHARACTERS.filter(c => !sel.find(s => s.id === c.id))
         const b = makeBattle([...sel], aiHand)
         setBattle(b)
         setPhase('battle')
+        playCardPlace()
         // AI card fly-down animation → then player can pick
         addTimer(() => {
           setBattle(prev => prev ? { ...prev, roundPhase: 'picking' } : prev)
@@ -195,10 +210,14 @@ export function useUmeBattle() {
     const isOver = prev.playerScore >= 2 || prev.aiScore >= 2 || prev.playerHand.length === 0
     if (isOver) {
       setPhase('result')
+      // Play game result sound
+      if (prev.playerScore > prev.aiScore) playVictory()
+      else playDefeat()
       return
     }
     // AI picks next card
     const nextAiCard = prev.aiHand[Math.floor(Math.random() * prev.aiHand.length)]
+    playCardPlace()
     setBattle({
       ...prev,
       roundIndex: nextRound,
@@ -221,6 +240,7 @@ export function useUmeBattle() {
 
   // ── Battle phase ─────────────────────────────────────────────────────────
   const playCard = useCallback((char: Character) => {
+    playCardPlay()
     // Player places card → flipping phase
     setBattle(prev => {
       if (!prev || prev.roundPhase !== 'picking') return prev
@@ -235,12 +255,16 @@ export function useUmeBattle() {
     // Player card lands → AI card starts flipping
     addTimer(() => {
       setBattle(prev => prev ? { ...prev, roundPhase: 'ai_flipping' } : prev)
+      playCardFlip()
 
       // Step 1: AI flip completes → resolve combat & show element
       addTimer(() => {
         setBattle(prev => {
           if (!prev || !prev.playerCard || !prev.aiCard) return prev
           const result = resolveCombat(prev.playerCard, prev.aiCard)
+          // Play element sound
+          if (result.elResult === 'advantage') playCounter()
+          else if (result.elResult === 'disadvantage') playDisadvantage()
           return {
             ...prev,
             roundPhase: 'reveal_element',
@@ -257,16 +281,30 @@ export function useUmeBattle() {
 
         // Step 2: Show skill activation
         addTimer(() => {
-          setBattle(prev => prev ? { ...prev, roundPhase: 'reveal_skill' } : prev)
+          setBattle(prev => {
+            if (prev && (prev.playerSkillTriggered || prev.aiSkillTriggered)) playSkill()
+            return prev ? { ...prev, roundPhase: 'reveal_skill' } : prev
+          })
 
           // Step 3: Show ATK values + crit
           addTimer(() => {
-            setBattle(prev => prev ? { ...prev, roundPhase: 'reveal_atk' } : prev)
+            setBattle(prev => {
+              if (!prev) return prev
+              playAtkReveal()
+              if (prev.isCrit || prev.isAiCrit) {
+                addTimer(() => playCrit(), 150)
+              }
+              return { ...prev, roundPhase: 'reveal_atk' }
+            })
 
             // Step 4: Show result + update score
             addTimer(() => {
               setBattle(prev => {
                 if (!prev) return prev
+                // Play round result sound
+                if (prev.roundWinner === 'player') playRoundWin()
+                else if (prev.roundWinner === 'ai') playRoundLose()
+                else playRoundDraw()
                 return {
                   ...prev,
                   roundPhase: 'reveal_result',

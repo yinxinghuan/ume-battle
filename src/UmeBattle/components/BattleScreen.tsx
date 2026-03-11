@@ -1,5 +1,6 @@
 import { memo, useState } from 'react'
 import type { BattleState, Character, Element } from '../types'
+import { playTap } from '../utils/sounds'
 import { t } from '../i18n'
 import logoSrc from '../img/ume_logo.png'
 import fireIcon from '../img/element_fire.png'
@@ -166,7 +167,7 @@ const BattleScreen = memo(function BattleScreen({ battle, onPlay }: Props) {
           </div>
         </div>
         <div className="ub-battle__hud-round">{roundLabel}</div>
-        <button className="ub-battle__help-btn" onPointerDown={() => setShowHelp(true)}>?</button>
+        <button className="ub-battle__help-btn" onPointerDown={() => { playTap(); setShowHelp(true) }}>?</button>
       </div>
 
       {/* AI remaining cards — fan layout */}

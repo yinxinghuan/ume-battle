@@ -1,6 +1,7 @@
 import { memo } from 'react'
 import type { BattleState } from '../types'
 import { t } from '../i18n'
+import { playTap } from '../utils/sounds'
 import './ResultScreen.less'
 
 interface Props {
@@ -45,7 +46,7 @@ const ResultScreen = memo(function ResultScreen({ battle, playerWon, onRestart }
         ))}
       </div>
 
-      <button className="ub-result__btn" onPointerDown={onRestart}>
+      <button className="ub-result__btn" onPointerDown={() => { playTap(); onRestart() }}>
         {t('playAgain')}
       </button>
     </div>
