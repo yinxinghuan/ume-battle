@@ -1,15 +1,17 @@
-import { memo, forwardRef } from 'react'
+import { memo, forwardRef, useState } from 'react'
 import { useUmeBattle } from './hooks/useUmeBattle'
-import StartScreen  from './components/StartScreen'
-import SelectScreen from './components/SelectScreen'
-import BattleScreen from './components/BattleScreen'
-import ResultScreen from './components/ResultScreen'
+import SplashScreen  from './components/SplashScreen'
+import StartScreen   from './components/StartScreen'
+import SelectScreen  from './components/SelectScreen'
+import BattleScreen  from './components/BattleScreen'
+import ResultScreen  from './components/ResultScreen'
 import aigramSrc from './img/aigram.svg'
 import { FIELD_W, FIELD_H } from './types'
 import './UmeBattle.less'
 
 const UmeBattle = memo(
   forwardRef<HTMLDivElement>(function UmeBattle(_props, ref) {
+    const [showSplash, setShowSplash] = useState(true)
     const {
       phase, selected, battle, playerWon, scale,
       toggleSelect, confirmSelection, playCard,
@@ -24,6 +26,10 @@ const UmeBattle = memo(
       }}>
         <div className="ub__bg" />
         <img className="ub__watermark" src={aigramSrc} alt="" draggable={false} />
+
+        {showSplash && (
+          <SplashScreen onDone={() => setShowSplash(false)} />
+        )}
 
         {(phase === 'start' || phase === 'start_exit') && (
           <StartScreen onStart={goToSelect} exiting={phase === 'start_exit'} />

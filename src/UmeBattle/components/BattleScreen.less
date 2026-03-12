@@ -349,8 +349,12 @@
     -webkit-backface-visibility: hidden;
   }
 
+  &__flip-back {
+    transform: rotateY(0deg) translateZ(1px);
+  }
+
   &__flip-front {
-    transform: rotateY(180deg);
+    transform: rotateY(180deg) translateZ(1px);
   }
 
   &__arena-mid {
