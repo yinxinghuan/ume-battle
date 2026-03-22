@@ -7,6 +7,7 @@ import './StartScreen.less'
 interface Props {
   onStart: () => void
   exiting?: boolean
+  onLeaderboard?: () => void
 }
 
 // Pre-generate random fly-out directions for each element
@@ -22,7 +23,7 @@ function randomFlyOut() {
   }
 }
 
-const StartScreen = memo(function StartScreen({ onStart, exiting }: Props) {
+const StartScreen = memo(function StartScreen({ onStart, exiting, onLeaderboard }: Props) {
   // Generate stable random values per mount
   const flyOuts = useMemo(() => ({
     logo: randomFlyOut(),
@@ -66,6 +67,13 @@ const StartScreen = memo(function StartScreen({ onStart, exiting }: Props) {
         style={exiting ? { opacity: 0, transform: 'scale(0.5)' } : undefined}
       >
         {t('tapToPlay')}
+      </button>
+      <button
+        className="ub-start__btn ub-start__btn--lb"
+        onPointerDown={!exiting ? onLeaderboard : undefined}
+        style={exiting ? { opacity: 0, transform: 'scale(0.5)' } : undefined}
+      >
+        🏆 排行榜
       </button>
     </div>
   )
