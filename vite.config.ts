@@ -6,7 +6,7 @@ export default defineConfig({
   base: '/ume-battle/',
   plugins: [react()],
   resolve: {
-    alias: { '@shared': path.resolve(__dirname, '../shared') },
+    alias: { '@shared': path.resolve(__dirname, 'src/shared') },
   },
   css: {
     preprocessorOptions: {
