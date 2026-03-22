@@ -43,10 +43,6 @@ const UmeBattle = memo(
       }}>
         <div className="ub__bg" />
         <img className="ub__watermark" src={aigramSrc} alt="" draggable={false} />
-        {(phase === 'start' || phase === 'start_exit') && (
-          <button className="ub__lb-icon" onPointerDown={() => setShowLeaderboard(true)}>🏆</button>
-        )}
-
         {showLeaderboard && (
           <Leaderboard
             gameName="UMe Battle"
@@ -62,7 +58,7 @@ const UmeBattle = memo(
         )}
 
         {(phase === 'start' || phase === 'start_exit') && (
-          <StartScreen onStart={goToSelect} exiting={phase === 'start_exit'} />
+          <StartScreen onStart={goToSelect} exiting={phase === 'start_exit'} onLeaderboard={() => setShowLeaderboard(true)} />
         )}
 
         {(phase === 'select' || phase === 'select_exit') && (
