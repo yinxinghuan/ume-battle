@@ -14,7 +14,7 @@ const UmeBattle = memo(
   forwardRef<HTMLDivElement>(function UmeBattle(_props, ref) {
     const [showSplash, setShowSplash] = useState(true)
     const [showLeaderboard, setShowLeaderboard] = useState(false)
-    const { isInAigram, submitScore, fetchGlobalLeaderboard, fetchFriendsLeaderboard } = useGameScore('ume-battle')
+    const { isInAigram, submitScore, fetchLeaderboard } = useGameScore()
     const {
       phase, selected, battle, playerWon, scale,
       toggleSelect, confirmSelection, playCard,
@@ -48,8 +48,7 @@ const UmeBattle = memo(
             gameName="UMe Battle"
             isInAigram={isInAigram}
             onClose={() => setShowLeaderboard(false)}
-            fetchGlobal={fetchGlobalLeaderboard}
-            fetchFriends={fetchFriendsLeaderboard}
+            fetch={fetchLeaderboard}
           />
         )}
 
