@@ -90,7 +90,7 @@ const STRINGS = {
 } as const
 
 function detectLocale(): 'zh' | 'en' {
-  const override = localStorage.getItem('game_locale')
+  const override = alteruLocalStorage.getItem('game_locale')
   if (override === 'en' || override === 'zh') return override
   return navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en'
 }
